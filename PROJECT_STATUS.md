@@ -1,59 +1,41 @@
 # PROJECT_STATUS
 
 Last updated: 2026-11-27
-Current gate: Gate 0 — Repository Intake (complete, awaiting owner approval)
-Overall status: IN PROGRESS
+Current gate: Gate 11 — Release & Handover (complete)
+Overall status: COMPLETE for side-loading / internal testing · BLOCKED for public Play release on device testing and owner Play actions
 
-## Gate checklist (from AGENT_SEQUENCE.md)
-- [x] Gate 0 — Repository Intake (awaiting approval)
-- [ ] Gate 1 — Product Manager (`docs/PRODUCT_BACKLOG.md`, `docs/OPEN_QUESTIONS.md`)
-- [ ] Gate 2 — Android Feasibility Spike (`docs/FEASIBILITY_REPORT.md`) — mandatory, cannot be skipped
-- [ ] Gate 3 — System Architect (`docs/ARCHITECTURE_REVIEW.md`, ADRs)
-- [ ] Gate 4 — UI/UX Designer
-- [ ] Gate 5 — Android Core Developer
-- [ ] Gate 6 — Tracking Engine Developer
-- [ ] Gate 7 — Database & Analytics Developer
-- [ ] Gate 8 — Feature Integration
-- [ ] Gate 9 — Security & Privacy Review
-- [ ] Gate 10 — QA
-- [ ] Gate 11 — Release & Handover
+## Gate checklist
+| Gate | Status | Evidence |
+|---|---|---|
+| 0 Repository intake | ✅ | this file (history in git) |
+| 1 Product manager | ✅ | docs/PRODUCT_BACKLOG.md, docs/OPEN_QUESTIONS.md |
+| 2 Feasibility spike | ✅ desk + in-app probe · ⚠️ device UNVERIFIED | docs/FEASIBILITY_REPORT.md, diagnostics/FeasibilityProbe.kt |
+| 3 Architect | ✅ | docs/ARCHITECTURE_REVIEW.md, docs/adr/ |
+| 4 UI/UX | ✅ | docs/UI_DESIGN_SYSTEM.md, docs/screenshots/ |
+| 5 Android core | ✅ clean build | Gradle wrapper 9.9.2, AGP 9.5.3 |
+| 6 Tracking engine | ✅ | Collector, EventReconstructor, docs/TRACKING_LIMITATIONS.md, 19 tests |
+| 7 Database & analytics | ✅ | Room v1 schema, Analytics, backup/CSV, docs/DATABASE_SCHEMA.md |
+| 8 Feature integration | ✅ | all screens wired to ViewModels; Robolectric E2E round trips |
+| 9 Security & privacy | ✅ | docs/SECURITY_PRIVACY_AUDIT.md |
+| 10 QA | ✅ automated · ⚠️ device matrix not run | docs/QA_REPORT.md |
+| 11 Release | ✅ | dist/ (APK, AAB, SHA256SUMS), docs/FINAL_HANDOVER.md |
 
-## Completed
-- [x] Read all 35 files of the handover pack v1.0 (manifest states 34; the count excludes or miscounts one file — no content missing).
-- [x] Inspected repository: one commit (`e09c6dd Initial commit`), single file `README.md` containing only `# LIFELOG`. No Android/Gradle project, no source code, nothing to preserve beyond README.
-- [x] Recorded development environment (below).
-- [x] Created `PROJECT_STATUS.md` and `DECISIONS.md`.
+## Build and test evidence (2026-11-27)
+- `./gradlew clean :app:assembleRelease :app:bundleRelease :app:assembleDebug` → BUILD SUCCESSFUL
+- `./gradlew :app:testDebugUnitTest` → 48 tests, 0 failures
+- `./gradlew :app:lintDebug` → 0 errors, 1 warning (OldTargetApi, intentional)
+- `apksigner verify` → Verifies (v3), cert SHA-256 e60b27c6…267b
+- Release APK SHA-256: c6be86e785319fb8c614bba24c31c35d94bd18f8b57b5ca16b4484aa5d56e5da
+- Merged permissions: PACKAGE_USAGE_STATS, RECEIVE_BOOT_COMPLETED, WAKE_LOCK, ACCESS_NETWORK_STATE (+ internal signature permission). No INTERNET.
 
-## In progress
-- [ ] None — waiting for approval to start Gate 1.
-
-## Blocked / risks
-- [ ] **No physical Android device available to this agent.** The cloud container has no USB/ADB device. Gate 2 OEM behaviour (retention window, screen events, reboot, Doze) cannot be verified here — results must be marked UNVERIFIED unless the owner runs the spike on their own phone and supplies logs.
-- [ ] **No hardware acceleration (`/dev/kvm` absent).** An Android emulator cannot run at usable speed in this container; emulator-based instrumentation tests are effectively unavailable here.
-- [ ] **Android SDK not installed.** No `sdkmanager`, `adb`, platforms or build-tools. Network access to `dl.google.com` and `maven.google.com` works (HTTP 200), so the SDK command-line tools can be installed in-container for compile + JVM unit tests at Gate 2/5. Not yet installed (out of Gate 0 scope).
-- [ ] Ephemeral container: anything not committed and pushed is lost; SDK install must be repeated per session (candidate for an environment setup script later).
-- [ ] Dependency versions (AGP, Kotlin, Compose BOM, Room, WorkManager) not yet verified against official release notes — required before pinning (Gate 5).
-
-## Environment inventory (2026-11-27)
-| Item | Value |
-|---|---|
-| Host | Cloud container, Ubuntu 24.04.5 LTS, x86_64, 4 vCPU, 15 GB RAM, ~60 GB free disk |
-| JDK | OpenJDK 21.0.13.1 (`/usr/lib/jvm/java-21-openjdk-amd64`) |
-| Gradle (system) | 8.14.3 (project will use its own Gradle wrapper) |
-| Kotlin CLI | not installed (Gradle plugin will supply Kotlin) |
-| Android SDK / cmdline-tools | not installed; `ANDROID_HOME` unset; cmdline-tools 23.0 listed in Google repository |
-| adb / emulator | not installed; no `/dev/kvm` |
-| Android Studio | not available (headless container) |
-| Network | dl.google.com, maven.google.com, Maven Central, Gradle plugin portal, services.gradle.org, developer.android.com all reachable |
-| Git | branch `ccr-890723c5-xupcdi` (dev branch), `main`; remote `annustarkac-hub/LIFELOG` |
-
-## Build and test evidence
-- Command: none — no buildable project exists yet.
-- Result: N/A. No tests exist.
+## Blocked / outstanding (owner)
+- [ ] Run APK on ≥ 1–3 physical phones; save Diagnostics report; execute lifecycle tests (reboot, Doze, force-stop, update)
+- [ ] Store release keystore + passwords safely (losing them prevents updates)
+- [ ] Confirm application ID; Play declarations; host privacy policy
 
 ## Known limitations
-- Repository is greenfield; all work starts from zero.
-- Device-dependent claims cannot be verified by this agent without the owner's device.
+See docs/TRACKING_LIMITATIONS.md and docs/QA_REPORT.md.
 
-## Next agent/gate
-- Gate 1 — Product Manager, after owner approval of this intake report.
+## Environment notes
+SDK installed at /opt/android-sdk in the ephemeral container. A Gradle init script (~/.gradle/init.d, not in repo)
+added Google's Maven Central mirror because Maven Central rate-limited Robolectric jars (HTTP 429).

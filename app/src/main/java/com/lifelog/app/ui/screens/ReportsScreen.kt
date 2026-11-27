@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -94,8 +96,8 @@ fun ReportsScreen(vm: ReportsViewModel, state: MainState, pad: PaddingValues, ic
                 } else {
                     item {
                         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                            MetricTile("App foreground", Fmt.duration(s.anyAppForegroundMs), compare(s.anyAppForegroundMs, d.previous.anyAppForegroundMs, d.previous), p.recorded, Modifier.weight(1f))
-                            MetricTile("Screen-on", Fmt.duration(s.screenOnMs), compare(s.screenOnMs, d.previous.screenOnMs, d.previous), p.screen, Modifier.weight(1f))
+                            MetricTile("App foreground", Fmt.duration(s.anyAppForegroundMs), compare(s.anyAppForegroundMs, d.previous.anyAppForegroundMs, d.previous), p.recorded, Modifier.weight(1f).fillMaxHeight())
+                            MetricTile("Screen-on", Fmt.duration(s.screenOnMs), compare(s.screenOnMs, d.previous.screenOnMs, d.previous), p.screen, Modifier.weight(1f).fillMaxHeight())
                         }
                     }
                     item {

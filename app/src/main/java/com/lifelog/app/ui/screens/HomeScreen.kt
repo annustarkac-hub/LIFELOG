@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -106,15 +108,15 @@ fun HomeScreen(
                 val d = l.data
                 val today = d.today
                 item {
-                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Row(Modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         MetricTile(
                             "Screen-on today", Fmt.duration(today.screenOnMs),
                             if (today.screenOnMs == null) "No supported screen data" else "Android-reported interactive time",
-                            p.screen, Modifier.weight(1f),
+                            p.screen, Modifier.weight(1f).fillMaxHeight(),
                         )
                         MetricTile(
                             "App foreground today", Fmt.duration(today.anyAppForegroundMs),
-                            "Time with any app in front", p.recorded, Modifier.weight(1f),
+                            "Time with any app in front", p.recorded, Modifier.weight(1f).fillMaxHeight(),
                         )
                     }
                 }
@@ -151,12 +153,12 @@ fun HomeScreen(
                     }
                 }
                 item {
-                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        MetricTile("Last 30 days", Fmt.duration(d.last30.anyAppForegroundMs), "${d.last30.daysWithData}/30 days with data", p.recorded, Modifier.weight(1f))
+                    Row(Modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        MetricTile("Last 30 days", Fmt.duration(d.last30.anyAppForegroundMs), "${d.last30.daysWithData}/30 days with data", p.recorded, Modifier.weight(1f).fillMaxHeight())
                         MetricTile(
                             "Recorded since tracking began", Fmt.duration(d.lifetime?.recordedAppMs),
                             state.profile?.firstLifelogTrackingAtUtc?.let { "Since ${Fmt.dateTime(it, tf)}" } ?: "Tracking not started",
-                            p.recorded, Modifier.weight(1f),
+                            p.recorded, Modifier.weight(1f).fillMaxHeight(),
                         )
                     }
                 }

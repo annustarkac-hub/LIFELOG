@@ -81,6 +81,10 @@ fun LifelogTheme(mode: ThemeMode, content: @Composable () -> Unit) {
         ThemeMode.SYSTEM -> isSystemInDarkTheme()
     }
     CompositionLocalProvider(LocalProvenance provides if (dark) DarkProvenance else LightProvenance) {
-        MaterialTheme(colorScheme = if (dark) DarkScheme else LightScheme, typography = Typo, content = content)
+        val scheme = if (dark) DarkScheme else LightScheme
+        MaterialTheme(colorScheme = scheme, typography = Typo) {
+            // Default text colour for content not inside a Surface/Card, so no text falls back to black.
+            CompositionLocalProvider(androidx.compose.material3.LocalContentColor provides scheme.onBackground, content = content)
+        }
     }
 }

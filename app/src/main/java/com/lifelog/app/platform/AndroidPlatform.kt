@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.BatteryManager
 import android.os.Build
@@ -15,6 +14,7 @@ import android.os.PowerManager
 import android.os.Process
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.core.graphics.createBitmap
 import com.lifelog.app.domain.RawUsageEvent
 import com.lifelog.app.domain.UsageEventCodes
 import java.util.concurrent.ConcurrentHashMap
@@ -26,12 +26,7 @@ class AndroidUsageStatsSource(context: Context) : UsageStatsSource {
     private val appOps = app.getSystemService(AppOpsManager::class.java)
 
     override fun hasUsageAccess(): Boolean {
-        val mode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            appOps.unsafeCheckOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, Process.myUid(), app.packageName)
-        } else {
-            @Suppress("DEPRECATION")
-            appOps.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, Process.myUid(), app.packageName)
-        }
+        val mode = appOps.unsafeCheckOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, Process.myUid(), app.packageName)
         return UsageAccessMode.isGranted(mode, app.checkCallingOrSelfPermission(android.Manifest.permission.PACKAGE_USAGE_STATS) == PackageManager.PERMISSION_GRANTED)
     }
 
@@ -106,7 +101,7 @@ class AndroidAppInfoSource(context: Context) : AppInfoSource {
         iconCache[packageName]?.let { return it }
         return try {
             val d = pm.getApplicationIcon(packageName)
-            val bmp = Bitmap.createBitmap(sizePx, sizePx, Bitmap.Config.ARGB_8888)
+            val bmp = createBitmap(sizePx, sizePx)
             val c = Canvas(bmp)
             d.setBounds(0, 0, sizePx, sizePx)
             d.draw(c)

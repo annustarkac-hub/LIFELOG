@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -145,9 +147,9 @@ fun AppDetailScreen(vm: AppDetailViewModel, state: MainState, main: MainViewMode
                     }
                 }
                 item {
-                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        MetricTile("Last 30 days", Fmt.duration(d.last30.perAppMs[d.packageName] ?: 0), "${d.last30.daysWithData} days with data", p.recorded, Modifier.weight(1f))
-                        MetricTile("Lifetime stored", Fmt.duration(d.lifetime.perAppMs[d.packageName] ?: 0), d.lifetimeSince?.let { "Since ${Fmt.shortDate(it)}" }, p.historical, Modifier.weight(1f))
+                    Row(Modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        MetricTile("Last 30 days", Fmt.duration(d.last30.perAppMs[d.packageName] ?: 0), "${d.last30.daysWithData} days with data", p.recorded, Modifier.weight(1f).fillMaxHeight())
+                        MetricTile("Lifetime stored", Fmt.duration(d.lifetime.perAppMs[d.packageName] ?: 0), d.lifetimeSince?.let { "Since ${Fmt.shortDate(it)}" }, p.historical, Modifier.weight(1f).fillMaxHeight())
                     }
                 }
                 item {

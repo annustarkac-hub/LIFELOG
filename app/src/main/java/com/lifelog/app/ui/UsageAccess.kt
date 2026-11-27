@@ -3,8 +3,8 @@ package com.lifelog.app.ui
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.provider.Settings
+import androidx.core.net.toUri
 
 /**
  * Opens the system Usage Access screen. Settings.ACTION_USAGE_ACCESS_SETTINGS may be missing on some builds,
@@ -12,9 +12,9 @@ import android.provider.Settings
  */
 fun openUsageAccessSettings(context: Context) {
     val attempts = listOf(
-        Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS, Uri.parse("package:${context.packageName}")),
+        Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS, "package:${context.packageName}".toUri()),
         Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS),
-        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:${context.packageName}")),
+        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, "package:${context.packageName}".toUri()),
         Intent(Settings.ACTION_SETTINGS),
     )
     for (i in attempts) {

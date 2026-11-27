@@ -9,6 +9,11 @@
 
     <!-- Package visibility: only apps with a launcher entry, so labels/icons can be shown.
          QUERY_ALL_PACKAGES is deliberately NOT requested. -->
+    <!-- Merged in by WorkManager but unused: LIFELOG never runs foreground services. -->
+    <uses-permission
+        android:name="android.permission.FOREGROUND_SERVICE"
+        tools:node="remove" />
+
     <queries>
         <intent>
             <action android:name="android.intent.action.MAIN" />
@@ -37,6 +42,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name="androidx.work.impl.foreground.SystemForegroundService"
+            tools:node="remove" />
 
         <!-- WorkManager's own initializer is replaced by Configuration.Provider in LifelogApp. -->
         <provider
